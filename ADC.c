@@ -36,3 +36,15 @@ int ADC(int ch)
   return(value);
 }
 
+void main()
+{
+
+  int ain0 ain1;
+  while(1)
+  {
+      ain0 = ADC(0);
+      ain1 = ADC(1);
+      printf("\r%d\t%d",ain0,ain1)
+    
+  }
+}
