@@ -44,7 +44,7 @@ void main()
   {
       ain0 = ADC(0);
       ain1 = ADC(1);
-      printf("\r%d\t%d",ain0,ain1)
-    
+      printf("\r%d\t%d",ain0,ain1);
+      usleep(1000);
   }
 }
