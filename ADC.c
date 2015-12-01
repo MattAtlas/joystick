@@ -31,7 +31,7 @@ int ADC(int ch)
   read(file, buffer, 2);
   
   close(file);
-  value = (buffer[0] | (buffer[1] << 8));
+  value = ((buffer[0] << 4) | (buffer[1] >> 4));
   
   return(value);
 }
@@ -39,7 +39,8 @@ int ADC(int ch)
 void main()
 {
 
-  int ain0 ain1;
+  int ain0;
+  int ain1;
   while(1)
   {
       ain0 = ADC(0);
