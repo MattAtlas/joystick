@@ -31,13 +31,13 @@ int ADC(int ch)
     0b00000000,       // output register
     0b10010001};      // chip address /w read bit
     
-  if (write(file, setup, 4)) != 4) {
+  if (write(file, setup, 4) != 4) {
     /* ERROR HANDLING: i2c transaction failed */
   }
-  if (write(file, setread, 3)) != 3) {
+  if (write(file, setread, 3) != 3) {
     /* ERROR HANDLING: i2c transaction failed */
   }
-  if (read(file, buffer, 2)) != 2) {
+  if (read(file, buffer, 2) != 2) {
     /* ERROR HANDLING: i2c transaction failed */
   
   close(file);
