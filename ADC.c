@@ -33,12 +33,16 @@ int ADC(int ch)
     
   if (write(file, setup, 4) != 4) {
     /* ERROR HANDLING: i2c transaction failed */
+    printf("Error writing setup");
   }
   if (write(file, setread, 3) != 3) {
     /* ERROR HANDLING: i2c transaction failed */
+    printf("Error writing setread");
   }
   if (read(file, buffer, 2) != 2) {
     /* ERROR HANDLING: i2c transaction failed */
+    printf("Error reading to buffer");
+  }
   
   close(file);
   value = ((buffer[0] << 4) | (buffer[1] >> 4));
@@ -46,7 +50,7 @@ int ADC(int ch)
   return(value);
 }
 
-void main()
+int main()
 {
 
   int ain0;
@@ -58,4 +62,5 @@ void main()
       printf("\r%d\t%d",ain0,ain1);
       usleep(1000);
   }
+  return 0;
 }
