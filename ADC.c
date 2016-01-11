@@ -8,45 +8,50 @@ int ADC(int ch)
 {
   int file;
   int addr = 0x48;
-  char filename[15];
-  uint8_t buffer[2];
+  char *filename = "/dev/i2c-3";
+  char buffer[2] = {0};
   int value;
-  sprintf(filename, "/dev/i2c-%d", 3);
-  file = open(filename, O_RDWR);
-  if(file < 0)
-    {
-      perror("Opening i2c device node.\n");
-      return(1);
-    }
-  ioctl(file, I2C_SLAVE, addr);
-  uint8_t MSB[4] = {0b01000100, 0b01010100, 0b01100100, 0b01110100};
+  value = 0;
   
-  uint8_t setup[4] = {
-    0b10010000,       // chip address
+  if ((file = open(filename, O_RDWR)) < 0) {
+      perror("Opening i2c device node.\n");
+      exit(1);
+    }
+    
+  if (ioctl(file, I2C_SLAVE, addr) < 0) {
+      perror("Failed to aquire bus access and/or talk to slave. \n");
+      exit(1);
+  }
+  
+  char MSB[4] = {
+    0b01000100,       // ch 0
+    0b01010100,       // ch 1
+    0b01100100,       // ch 2
+    0b01110100};      // ch 3
+  
+  char setup[3] = {
     0b00000001,       // config address
     MSB[ch],          // MSB config bits
     0b10000011};      // LSB config bits
    
-  uint8_t setread[3] = {
-    0b10010000,       // chip address /w write bit
-    0b00000000,       // output register
-    0b10010001};      // chip address /w read bit
+  char setread[1] = {
+    0b00000000}       // output register
     
-  if (write(file, setup, 4) != 4) {
-    /* ERROR HANDLING: i2c transaction failed */
-    printf("Error writing setup");
+  if (write(file, setup, 3) != 3) {
+    perror("Error writing setup. \n");
+    exit(1);
   }
-  if (write(file, setread, 3) != 3) {
-    /* ERROR HANDLING: i2c transaction failed */
-    printf("Error writing setread");
+  if (write(file, setread, 1) != 1) {
+    perror("Error writing setread. \n");
+    exit(1);
   }
   if (read(file, buffer, 2) != 2) {
-    /* ERROR HANDLING: i2c transaction failed */
-    printf("Error reading to buffer");
+    perror("Error reading to buffer");
+    exit(1);
   }
   
   close(file);
-  value = ((buffer[0] << 4) | (buffer[1] >> 4));
+  value = ((buffer[0] << 8) | buffer[1]) >> 4;
   
   return(value);
 }
@@ -59,9 +64,10 @@ int main()
   while(1)
   {
       ain0 = ADC(0);
+      usleep(2000);
       ain1 = ADC(1);
       printf("\r%d\t%d",ain0,ain1);
-      usleep(1000);
+      usleep(100000);
   }
   return 0;
 }
