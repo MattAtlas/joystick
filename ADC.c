@@ -3,6 +3,7 @@
 #include <sys/ioctl.h>
 #include <linux/i2c-dev.h>
 #include <stdint.h>
+#include <errno.h>
 
 int ADC(int ch)
 {
