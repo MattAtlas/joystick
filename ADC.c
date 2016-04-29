@@ -4,6 +4,7 @@
 #include <linux/i2c-dev.h>
 #include <stdint.h>
 #include <errno.h>
+#include "adc.h"
 
 int get_adc_value(int ch)
 {
@@ -62,6 +63,9 @@ int get_adc_value(int ch)
     perror("Error writing setread. \n");
     exit(1);
   }
+  
+  usleep(750); 	// wait for ADC sample to finish. 1/1600 sec + 125us
+  
     // Read from Conversion register.
 	// First byte, address and high read bit implied by read command.
   if (read(file, buffer, 2) != 2) {
@@ -77,19 +81,89 @@ int get_adc_value(int ch)
 }
 
 
+int get_all_values(Joystick *J){
 
-// int main()
-// {
+	int raw[4];
+	int deadzone = 10;
+	raw[0] = get_adc_value(0);
+	raw[1] = get_adc_value(1);
+	raw[2] = get_adc_value(2);
+	raw[3] = get_adc_value(3);
+	
+	for(int i=0;i<4;i++){
+		if raw[i] > (J->mid[i] + deadzone){
+			J->value[i] = 
+			(raw[i] - (J->mid[i] + deadzone))/(J->max[i] - (J->mid[i] + deadzone));	
+		}
+		else if raw[i] < (J->mid[i] + deadzone){
+			J->value[i] = 
+			(raw[i] - (J->mid[i] - deadzone))/((J->mid[i] - deadzone) - J->min[i]);	
+		}
+		else {
+			J->value[i] = 0;
+		}
+	}
+	
+	return 1;
+}
 
-  // int ain0;
-  // int ain1;
-  // while(1)
-  // {
-      // ain0 = ADC(0);
-      // usleep(650);
-      // ain1 = ADC(1);
-      // printf("\r%d\t%d",ain0,ain1);
-      // usleep(100000);
-  // }
-  // return 0;
-// }
+
+int initialize_joystick(Joystick *J){
+	////
+	printf("Hold right joystick all the way left.\n");
+	printf("Press ENTER when ready.\n");
+	getchar();
+	J->min[0] = get_adc_value(0);
+	
+	printf("Hold right joystick all the way right.\n");
+	printf("Press ENTER when ready.\n");
+	getchar();
+	J->max[0] = get_adc_value(0);
+
+	printf("Hold right joystick all the way down.\n");
+	printf("Press ENTER when ready.\n");
+	getchar();
+	J->min[1] = get_adc_value(1);
+	
+	printf("Hold right joystick all the way up.\n");
+	printf("Press ENTER when ready.\n");
+	getchar();
+	J->max[1] = get_adc_value(1);
+
+	printf("Let go of right joystick.\n");
+	printf("Press ENTER when ready.\n");
+	getchar();
+	J->mid[0] = get_adc_value(0);
+	J->mid[1] = get_adc_value(1);
+
+	////
+	
+	printf("Hold left joystick all the way left.\n");
+	printf("Press ENTER when ready.\n");
+	getchar();
+	J->min[2] = get_adc_value(2);
+	
+	printf("Hold left joystick all the way right.\n");
+	printf("Press ENTER when ready.\n");
+	getchar();
+	J->max[2] = get_adc_value(2);
+
+	printf("Hold left joystick all the way left.\n");
+	printf("Press ENTER when ready.\n");
+	getchar();
+	J->min[3] = get_adc_value(3);
+	
+	printf("Hold left joystick all the way right.\n");
+	printf("Press ENTER when ready.\n");
+	getchar();
+	J->max[3] = get_adc_value(3);
+
+	printf("Let go of left joystick.\n");
+	printf("Press ENTER when ready.\n");
+	getchar();
+	J->mid[2] = get_adc_value(2);	
+	J->mid[3] = get_adc_value(3);	
+	
+	printf("Initialization complete.\n");
+	
+}
