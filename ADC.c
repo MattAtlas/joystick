@@ -38,13 +38,13 @@ int get_adc_value(int ch)
     0b10000011};      // LSB config bits
 	
 	// bit 15 		single shot conversion start	:no effect
-	// bit 14-12	input multiplexer				:see above
-	// bit 11-9		full scale configuration		:2.048V
-	// bit 8		single shot mode				:off
-	// bit 7-5		data rate						:1600 SPS
-	// bit 4		comparator mode					:traditional w/ hysteresis
-	// bit 3		comparator polarity				:active low
-	// bit 2		latching comparator				:off
+	// bit 14-12		input multiplexer		:see above
+	// bit 11-9		full scale configuration	:2.048V
+	// bit 8		single shot mode		:off
+	// bit 7-5		data rate			:1600 SPS
+	// bit 4		comparator mode			:traditional w/ hysteresis
+	// bit 3		comparator polarity		:active low
+	// bit 2		latching comparator		:off
 	// bit 1-0		comparator queue and disable	:disable
 	
    
@@ -66,7 +66,7 @@ int get_adc_value(int ch)
   
   usleep(750); 	// wait for ADC sample to finish. 1/1600 sec + 125us
   
-    // Read from Conversion register.
+	// Read from Conversion register.
 	// First byte, address and high read bit implied by read command.
   if (read(file, buffer, 2) != 2) {
     perror("Error reading to buffer");
