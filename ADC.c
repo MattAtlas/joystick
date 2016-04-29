@@ -11,8 +11,8 @@ int get_adc_value(int ch)
   int file;								
   int addr = 0x48;
   char *filename = "/dev/i2c-3";		// i2c bus 3 for XU4
-  char buffer[2] = {0};					// buffer for incoming data
-  int value;							// ADC value after decode
+  char buffer[2] = {0};				// buffer for incoming data
+  int value;					// ADC value after decode
   value = 0;
   
   if ((file = open(filename, O_RDWR)) < 0) {
